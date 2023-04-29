@@ -2,7 +2,7 @@
 import logging
 import psycopg2
 from psycopg2.extras import execute_batch
-from get_data import scrapper
+from utils.get_data import scrapper
 
 parent_logger = logging.getLogger("parent")
 parent_logger.setLevel(logging.INFO)
