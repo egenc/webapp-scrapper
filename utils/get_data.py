@@ -2,10 +2,10 @@
 import math
 import requests
 from bs4 import BeautifulSoup
-import spacy
-
 from utils.techfinder import TechFinder
-nlp = spacy.load("en_core_web_sm")
+
+JD_PER_PAGE = 25
+ITERATION_OVER_PAGES = 30
 
 def scrapper(target_url: str, target_job_url: str) -> list:
     """Scraps the data from LinkedIn API
@@ -14,7 +14,7 @@ def scrapper(target_url: str, target_job_url: str) -> list:
     """
     job_ids, ultimate_result = [], []
     result_dict = {}
-    for i in range(0,math.ceil(30/25)):
+    for i in range(0,math.ceil(ITERATION_OVER_PAGES/JD_PER_PAGE)):
 
         res = requests.get(target_url.format(i), timeout=10)
         soup=BeautifulSoup(res.text,'html.parser')

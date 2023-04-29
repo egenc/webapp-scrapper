@@ -1,17 +1,15 @@
 """Class for techfinder functionality"""
-from dataclasses import dataclass
-from nltk.corpus import stopwords
+from dataclasses import dataclass, field
 import nltk
-
-### stop works need to be removed
-print(">>>>>>>Downloading stopwords to clean text>>>>>>>")
-nltk.download('stopwords')
+from nltk.corpus import stopwords
 
 @dataclass
 class TechFinder():
     """input: source path for txt
        purposed for detecting tech stack from job description
     """
+    nltk.download("stopwords")
+    stopwords: list[str] = field(default_factory=lambda: stopwords.words("english"))
     path: str = "tech_stack.txt"
 
     def read_txt(self, path):
@@ -26,6 +24,6 @@ class TechFinder():
 
         source_txt = self.read_txt(self.path).split("\n")
         for ele in job_desc.split(" "):
-            if ele.lower() in source_txt and ele.lower() not in stopwords.words('english'):
+            if ele.lower() in source_txt and ele.lower() not in self.stopwords:
                 tech_stack.append(ele)
         return list(set(tech_stack))
