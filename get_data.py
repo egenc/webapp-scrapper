@@ -2,7 +2,10 @@
 import math
 import requests
 from bs4 import BeautifulSoup
+import spacy
 
+from utils.techfinder import TechFinder
+nlp = spacy.load("en_core_web_sm")
 
 def scrapper(target_url: str, target_job_url: str) -> list:
     """Scraps the data from LinkedIn API
@@ -55,10 +58,26 @@ def scrapper(target_url: str, target_job_url: str) -> list:
         except AttributeError:
             result_dict["job_location"]=None
 
-        # o["job_desc"] = soup.find("div",
-        # {"class":"show-more-less-html__markup show-more-less-html__markup--clamp-after-5"}).text
-        result_dict["posted_time"] = \
-            soup.find("span",{"class":"posted-time-ago__text topcard__flavor--metadata"})
+        try:
+            result_dict["posted_time"] = \
+            soup.find("span",{"class":"posted-time-ago__text topcard__flavor--metadata"}).\
+                get_text(strip=True)
+        except AttributeError:
+            result_dict["posted_time"]=None
+
+        try:
+            job_desc = soup.find("div",
+            {"class":"show-more-less-html__markup show-more-less-html__markup--clamp-after-5"}).\
+                get_text(strip=True)
+            result_dict["job_description"] = job_desc
+        except AttributeError:
+            continue
+
+        if job_desc:
+            finder = TechFinder()
+            detected_techs = finder.tech_stack_finder(job_desc)
+            result_dict["tech_stack"] = ",".join(detected_techs)
+
         ultimate_result.append(result_dict)
         result_dict={}
 
