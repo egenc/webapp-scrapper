@@ -1,3 +1,4 @@
+"""Script is being used for generating a database for WebApp"""
 import psycopg2
 from psycopg2.extras import execute_batch
 from get_data import scrapper
@@ -6,7 +7,7 @@ TARGET_URL = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/se
 TARGET_JOB_URL = 'https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{}'
 
 namedict = scrapper(target_url=TARGET_URL, target_job_url=TARGET_JOB_URL)
-print(namedict[0])
+
 # Connect to the database
 conn = psycopg2.connect(
     host="localhost",
@@ -18,13 +19,13 @@ conn = psycopg2.connect(
 # Create a cursor object
 cursor = conn.cursor()
 
-query = """INSERT INTO jobs VALUES (default, %(job_id)s, 
+QUERY = """INSERT INTO jobs VALUES (default, %(job_id)s, 
         %(job_title)s, 
         %(seniority_level)s, 
         %(job_location)s, 
         %(company_name)s)"""
 
-execute_batch(cursor, query, namedict)
+execute_batch(cursor, QUERY, namedict)
 
 # Commit the transaction
 conn.commit()
