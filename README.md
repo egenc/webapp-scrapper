@@ -62,3 +62,4 @@ python -m pytest -s -v
 ```
 
 It will output:
+![image](https://user-images.githubusercontent.com/25952802/235351576-84e1c26d-7d3e-49b5-a24b-8a5bf0cf3c9a.png)
