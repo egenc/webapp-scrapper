@@ -7,30 +7,39 @@ from utils.techfinder import TechFinder
 JD_PER_PAGE = 25
 ITERATION_OVER_PAGES = 30
 
-def scrapper(target_url: str, target_job_url: str) -> list:
-    """Scraps the data from LinkedIn API
-    Inputs: URLs for jobs and jobs' contents
-    Returns: list of jobs and their metadata
-    """
-    job_ids, ultimate_result = [], []
-    result_dict = {}
+def get_job_ids(target_url: str) -> list:
+    """Get job ids from API"""
+    job_ids = []
     for i in range(0,math.ceil(ITERATION_OVER_PAGES/JD_PER_PAGE)):
 
         res = requests.get(target_url.format(i), timeout=10)
         soup=BeautifulSoup(res.text,'html.parser')
         alljobs_on_this_page=soup.find_all("li")
 
-        for x, ele in enumerate(alljobs_on_this_page):
-            jobid = alljobs_on_this_page[x].find("div",{"class":"base-card"}).\
+        for job in alljobs_on_this_page:
+            jobid = job.find("div",{"class":"base-card"}).\
                 get('data-entity-urn').split(":")[3]
             job_ids.append(jobid)
+    return job_ids
 
-    for j, ele in enumerate(job_ids):
+def scrapper(target_url: str, target_job_url: str) -> list:
+    """Scraps the data from LinkedIn API
+    Inputs: 
+        URLs for jobs and jobs' contents
+    Returns: 
+        list of jobs and their metadata
+    """
+    ultimate_result = []
+    result_dict = {}
 
-        resp = requests.get(target_job_url.format(job_ids[j]), timeout=10)
+    job_ids = get_job_ids(target_url)
+
+    for job_id in job_ids:
+
+        resp = requests.get(target_job_url.format(job_id), timeout=10)
         soup=BeautifulSoup(resp.text,'html.parser')
 
-        result_dict["job_id"] = job_ids[j]
+        result_dict["job_id"] = job_id
 
         try:
             result_dict["company_name"]=soup.find("div",{"class":"top-card-layout__card"}).\
